@@ -166,6 +166,8 @@ class emjHelper(mgHelper):
             'HiddenValley:spinFv = 0',    # Spin of bi-fundamental res.
             'HiddenValley:pTminFSR = {ptmin}'.format(ptmin=1.1 * self.mSqua),
             '4900101:m0 = {mass}'.format(mass=self.mSqua),
+            '4900102:m0 = {mass}'.format(mass=self.mSqua),
+            '4900103:m0 = {mass}'.format(mass=self.mSqua),           
             self._pythia_flavorflag(),
             *self._pythia_hv_lambda(), # Lambda settings depend on channel of interest
             *self._pythia_probvector(), # Ensure vectors are not produced for flavored t-channel
@@ -342,14 +344,7 @@ class emjHelper(mgHelper):
                 ])
             return decay_lines
 
-        # Defining some missing antiparticles
-        flavored_decay = [
-            '4900111:antiName = pivDiagbar',
-            '4900113:antiName = rhovDiagbar',
-        ]
-        flavored_decay.extend(extend_decay(4900113, 0, 1))
-        flavored_decay.extend(extend_decay(4900211, 0, 2))
-        flavored_decay.extend(extend_decay(4900213, 1, 2))
+        """
         # Neutral PI is the same-flavor one
         neutral_pi_gamma_sum = [
             sum([
@@ -360,9 +355,18 @@ class emjHelper(mgHelper):
             for idx in range(3)
         ]
         pi_comp = np.argmax(neutral_pi_gamma_sum)
-        flavored_decay.extend(extend_decay(4900111, pi_comp, pi_comp))
+        """
+        flavored_decay = []
+        for i in range(3):     # dark quark index
+            for j in range(i + 1):      # dark antiquark index, j <= i
+                pid = 4900001 + 100 * (i + 1) + 10 * (j + 1)
+                if i == j:
+                    comp1, comp2 = i, i     # replace with (pi_comp, pi_comp) to match old behavior exactly
+                else:
+                    comp1, comp2 = j, i
+                flavored_decay.extend(extend_decay(pid, comp1, comp2))
+        
         return flavored_decay
-
 
 if __name__ == "__main__":
     import argparse, re
