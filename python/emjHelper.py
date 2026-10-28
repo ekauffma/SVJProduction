@@ -66,7 +66,7 @@ class emjHelper(mgHelper):
 
     @property
     def sm_mass(self)->list[float]: #PDG mass of coupled SM quarks
-        return emjHelper.SM_COUPLING[self.type][0]
+        return emjHelper.SM_COUPLING[self.type][1]
 
     @property
     def xsec(self)->float:
