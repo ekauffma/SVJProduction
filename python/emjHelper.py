@@ -168,6 +168,7 @@ class emjHelper(mgHelper):
             '4900101:m0 = {mass}'.format(mass=self.mSqua),
             self._pythia_flavorflag(),
             *self._pythia_hv_lambda(), # Lambda settings depend on channel of interest
+            *self._pythia_probvector(), # Ensure vectors are not produced for flavored t-channel
             # Main resonance production productions
             *self.MakeRes(),
             # Dark sector decay configurations
@@ -205,6 +206,14 @@ class emjHelper(mgHelper):
             flagname=pythiaInfo.emjFlavoredFlagname(),
             flag = 'off' if self.mode == 'unflavored' else 'on'
         )
+
+    def _pythia_probvector(self)->list[str]:
+        probVector_lines = []
+        if self.mode == 'aligned' and self.channel == 't':
+            probVector_lines.append(
+                'HiddenValley:probVector = 0.0'        
+            )
+        return probVector_lines
 
     def MakeRes(self):
         """Pythia configuration for main heavy mediator production process"""
